@@ -110,7 +110,7 @@ def main():
     global GuessB
 
     gen_numbers()
-    print("\033[1mDOUBLE GUESS!\033[0m v0.1\nA really dumb number guessing game :p\n\n   Copyright (c) 2093, all rights not reversed.\n\nTwo numbers are randomly picked from \033[1m1 to 10\033[0m, you have to \033[1mguess what’s\nthe two numbers within the range\033[0m, you earn points based on how close you are to the picked number\nwithin a offset tolerance of \033[1m±4\033[0m.\n(0 being spot on, giving $3. within ±1 to ±4 is fairly accurate, giving $2-1. ±5 and beyond gets nothing)\n")
+    print("\033[1mDOUBLE GUESS!\033[0m v0.1\nA really dumb number guessing game :p\n\n   Copyright (c) 2093, all rights not reversed.\n\nTwo numbers are randomly picked from \033[1m1 to 10\033[0m, you have to \033[1mguess what’s\nthe two numbers within the range\033[0m, you earn points based on how close you are to the picked number\nwithin a offset tolerance of \033[1m±4\033[0m.\n(0 being spot on, giving 3 points. within ±1 to ±4 is fairly accurate, giving 2-1 points. ±5 and beyond gets nothing)\n")
 
     # Ask for 1st guess
     GuessA = input("What's your guess for the \033[1mfirst number\033[0m? ")
@@ -154,14 +154,14 @@ def main():
     # Final results
     os.system('cls' if os.name == 'nt' else 'clear')
     
-    print(f"How close where you? Well...\nThe first number was {NumA}, you said {GuessA}: You're {offsetA} units off, you earn \033[1m${payA}\033[0m. \nThe second number was {NumB}, you said {GuessB}: You're {offsetB} units off, you earn \033[1m${payB}\033[0m.")
+    print(f"How close where you? Well...\nThe first number was {NumA}, you said {GuessA}: You're {offsetA} units off, you earn \033[1m{payA} points\033[0m. \nThe second number was {NumB}, you said {GuessB}: You're {offsetB} units off, you earn \033[1m{payB} points\033[0m.")
 
     try:
         record_outcomes(Final_payout, NumA, GuessA, NumB, GuessB)
     except Exception as e:
         print(f"\n There was recoverable error recording you're payout, check in with the operator for assistance.\nError: {e}")
 
-    print(f"\nYour final Payout is \033[1m${Final_payout}\033[0m, check in with the operator to claim your prize.\a\n\nPress any key to restart.")
+    print(f"\nYour final Payout is \033[1m{Final_payout} points\033[0m, check in with the operator to claim your prize.\a\n\nPress any key to restart.")
 
     input()
     main()
