@@ -9,7 +9,6 @@
 # *
 
 import random
-import sys
 import os
 import time, datetime
 import uuid
@@ -17,6 +16,8 @@ import sqlite3
 
 os.environ['TZ']='UTC'
 time.tzset()
+
+db = "game.db"
 
 Range_Start = 1
 Range_End = 11
@@ -27,32 +28,18 @@ NumB = 0
 GuessA = 0
 GuessB = 0
 
-# | Diff | Pay |
-# |------|-----|
-# | 0    | 3   |
-# | 1    | 2   |
-# | 2    | 1   |
-# | 3    | 1   |
-# | 4    | 1   |
-# | 5    | 0   |
-# | 6    | 0   |
-# | 7    | 0   |
-# | 8    | 0   |
-# | 9    | 0   |
-# | 10   | 0   |
-
-Payouts = [
-    (0, 3),
-    (1, 2),
-    (2, 1),
-    (3, 1),
-    (4, 1),
-    (5, 0),
-    (6, 0),
-    (7, 0),
-    (8, 0),
-    (9, 0),
-    (10, 0)
+Payouts = [ # | Diff | Pay |
+    (0, 3), # | 0    | 3   |
+    (1, 2), # | 1    | 2   |
+    (2, 1), # | 2    | 1   |
+    (3, 1), # | 3    | 1   |
+    (4, 1), # | 4    | 1   |
+    (5, 0), # | 5    | 0   |
+    (6, 0), # | 6    | 0   |
+    (7, 0), # | 7    | 0   |
+    (8, 0), # | 8    | 0   |
+    (9, 0), # | 9    | 0   |
+    (10, 0) # | 10   | 0   |
 ]
 
 def get_payout(inputted,):
@@ -88,12 +75,13 @@ def is_input_valid(inputted):
         except ValueError:
             return False
 
+# Used for keeping track of payouts
 def record_outcomes(Final_payout, NumA, GuessA, NumB, GuessB):
     ID = str(uuid.uuid4())
     time = str(datetime.datetime.now())
 
     try:
-        con = sqlite3.connect("game.db")
+        con = sqlite3.connect(db)
         cur = con.cursor()
         cur.execute(
     "INSERT INTO games (ID, Score, NumA, NumAGuess, NumB, NumBGuess, CreateTime) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -103,6 +91,25 @@ def record_outcomes(Final_payout, NumA, GuessA, NumB, GuessB):
     except Exception as e:
         raise ValueError(f"\a{e}")
 
+def setup_db(create_db):
+    if create_db == True:
+        open(db, 'x')
+    try:
+        con = sqlite3.connect(db)
+        cur = con.cursor()
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS games (ID uniqueidentifier PRIMARY KEY, Score int, NumA int,NumAGuess int, NumB int, NumBGuess int, CreateTime TIMESTAMP)")
+        cur.connection.commit()
+        cur.connection.close()
+    except Exception as e:
+        raise ValueError(f"\a{e}")
+
+def check_file(Filename):
+    try:
+        with open(Filename, 'r'):
+            return True
+    except FileNotFoundError:
+        return False
 
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -159,7 +166,7 @@ def main():
     try:
         record_outcomes(Final_payout, NumA, GuessA, NumB, GuessB)
     except Exception as e:
-        print(f"\n There was recoverable error recording you're payout, check in with the operator for assistance.\nError: {e}")
+        print(f"\nThere was recoverable error recording you're payout, check in with the operator for assistance.\nError: {e}")
 
     print(f"\nYour final Payout is \033[1m{Final_payout} points\033[0m, check in with the operator to claim your prize.\a\n\nPress any key to restart.")
 
@@ -167,9 +174,15 @@ def main():
     main()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\nAlright, bye... (Check in operator for assistance)\a")
-    except Exception as e:
-        print(f"\nThere was a error! Get the lazy operator for assistance: {e}\a")
+    try: # Check DB file
+        if check_file(db) == False:
+            setup_db(True) # Create File
+        elif check_file(db) == True:
+            setup_db(False) # Don't Create File, just ensure table exists; the "CREATE TABLE IF NOT EXISTS..." part of setup_db
+    finally:
+        try:
+            main()
+        except KeyboardInterrupt:
+            print("\nAlright, bye... (Check in operator for assistance)\a")
+        except Exception as e:
+            print(f"\nThere was a error! Get the lazy operator for assistance: {e}\a")
