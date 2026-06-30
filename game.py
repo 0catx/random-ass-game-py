@@ -65,16 +65,17 @@ def is_input_valid(inputted):
         os.system('cls' if os.name == 'nt' else 'clear')
         print("Just Why!?!??\nYou know what? screw you, I'ma restart the game now >:P\a")
         time.sleep(5)
-        main()
+        return(2)
     else:
         try:
             int(inputted)
             if int(inputted) in range(Range_Start, Range_End):
-                return True
+                return(1)
             else:
-                return False
+                return(0)
         except ValueError:
-            return False
+            return(0)
+    # Code: 0 = False, 1 = True, 2 = Restart
 
 # Used for keeping track of payouts
 def record_outcomes(Final_payout, NumA, GuessA, NumB, GuessB):
@@ -118,15 +119,17 @@ def main():
     global GuessB
 
     gen_numbers()
-    print("\033[1mDOUBLE GUESS!\033[0m v0.1\nA really dumb number guessing game :p\n\n   Copyright (c) 2093, all rights not reversed.\n\nTwo numbers are randomly picked from \033[1m1 to 10\033[0m, you have to \033[1mguess what’s\nthe two numbers within the range\033[0m, you earn points based on how close you are to the picked number\nwithin a offset tolerance of \033[1m±4\033[0m.\n(0 being spot on, giving 3 points. within ±1 to ±4 is fairly accurate, giving 2-1 points. ±5 and beyond gets nothing)\n")
+    print("\033[1mDOUBLE GUESS!\033[0m v0.1.1\nA really dumb number guessing game :p\n\n   Copyright (c) 2093, all rights not reversed.\n\nTwo numbers are randomly picked from \033[1m1 to 10\033[0m, you have to \033[1mguess what’s\nthe two numbers within the range\033[0m, you earn points based on how close you are to the picked number\nwithin a offset tolerance of \033[1m±4\033[0m.\n(0 being spot on, giving 3 points. within ±1 to ±4 is fairly accurate, giving 2-1 points. ±5 and beyond gets nothing)\n")
 
     # Ask for 1st guess
     GuessA = input("What's your guess for the \033[1mfirst number\033[0m? ")
     inputted = GuessA.lower()
-    while is_input_valid(inputted)==False:
+    while is_input_valid(inputted)==0 or is_input_valid(inputted)==2:
+        if is_input_valid(inputted)==2:
+            return True # Will restart the game
         GuessA = input("Seems invalid, I'll ask again. What's your guess for the \033[1mfirst number\033[0m? ")
         inputted = GuessA.lower()
-        if is_input_valid(inputted)==False:
+        if is_input_valid(inputted)==0:
             continue
         else:
             break
@@ -134,10 +137,12 @@ def main():
     # Ask for 2nd guess
     GuessB = input("What's your guess for the \033[1msecond number\033[0m? ")
     inputted = GuessB.lower()
-    while is_input_valid(inputted)==False:  
+    while is_input_valid(inputted)==0 or is_input_valid(inputted)==2:  
+        if is_input_valid(inputted)==2:
+            return True # Will restart the game
         GuessB = input("Seems invalid, I'll ask again. What's your guess for the \033[1msecond number\033[0m? ")
         inputted = GuessB.lower()
-        if is_input_valid(inputted)==False:
+        if is_input_valid(inputted)==0:
             continue
         else:
             break
@@ -172,18 +177,26 @@ def main():
     print(f"\nYour final Payout is \033[1m{Final_payout} points\033[0m, check in with the operator to claim your prize.\a\n\nPress any key to restart.")
 
     input()
-    main()
+    return True # Signals it's done and it's true >:P
 
 if __name__ == '__main__':
+    playing = False
     try: # Check DB file
         if check_file(db) == False:
             setup_db(True) # Create File
+            playing = True
         elif check_file(db) == True:
             setup_db(False) # Don't Create File, just ensure table exists; the "CREATE TABLE IF NOT EXISTS..." part of setup_db
+            playing = True
+        else: # Give up and let the games begin anyways
+            playing = True 
     finally:
-        try:
-            main()
-        except KeyboardInterrupt:
-            print("\nAlright, bye... (Check in operator for assistance)\a")
-        except Exception as e:
-            print(f"\nThere was a error! Get the lazy operator for assistance: {e}\a")
+        while playing:
+            try:
+                playing = main() 
+            except KeyboardInterrupt:
+                playing = False
+                print("\nAlright, bye... (Check in operator for assistance)\a")
+            except Exception as e:
+                playing = False
+                print(f"\nThere was a error! Get the lazy operator for assistance: {e}\a")
