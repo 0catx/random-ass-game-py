@@ -60,6 +60,7 @@ def find_offset(num, inputted):
     return abs(num - int(inputted))
 
 def is_input_valid(inputted):
+    # Meme inputs... forgive me for my sins qwq
     if inputted=="69" or inputted=="67" or inputted=="420" or inputted=="clanker" or inputted=="e=mc^2" or inputted=="e" or inputted=="amongus" or inputted=="gyatt" or inputted=="skibidi" or inputted=="ohio rizz" or inputted=="rizz":
         os.system('cls' if os.name == 'nt' else 'clear')
         print("Just Why!?!??\nYou know what? screw you, I'ma restart the game now >:P\a")
@@ -161,7 +162,7 @@ def main():
     # Final results
     os.system('cls' if os.name == 'nt' else 'clear')
     
-    print(f"How close where you? Well...\nThe first number was {NumA}, you said {GuessA}: You're {offsetA} units off, you earn \033[1m{payA} points\033[0m. \nThe second number was {NumB}, you said {GuessB}: You're {offsetB} units off, you earn \033[1m{payB} points\033[0m.")
+    print(f"How close where you? Well...\nThe first number was {NumA}, you said {GuessA}: You're {offsetA} numbers off, you earn \033[1m{payA} points\033[0m. \nThe second number was {NumB}, you said {GuessB}: You're {offsetB} numbers off, you earn \033[1m{payB} points\033[0m.")
 
     try:
         record_outcomes(Final_payout, NumA, GuessA, NumB, GuessB)
